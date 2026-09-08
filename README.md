@@ -32,3 +32,7 @@ Drop `TreeRegrow_0.1.1.zip` into `%APPDATA%\Factorio\mods`.
 
 Set "Spread attempts per cycle" to 200 in map settings, stand near a forest
 edge on natural ground, and watch new trees appear within a minute or two.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
