@@ -1,0 +1,9 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 2026-09-06
+  Features:
+    - Forests spread onto natural ground only, so trees ringed by paving stay solitary and decorative.
+    - Mining a living tree can drop a tree sapling; the Forestry technology unlocks crafting saplings from wood.
+    - Planted saplings grow into the dominant tree species within 16 tiles.
+    - A local density cap makes forests creep outward rather than thicken indefinitely.
+    - Spreading skips polluted ground by default, and dead or dry trees never propagate.

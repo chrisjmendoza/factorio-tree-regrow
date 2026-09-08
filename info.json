@@ -1,0 +1,11 @@
+{
+    "name": "TreeRegrow",
+    "version": "0.1.1",
+    "factorio_version": "2.0",
+    "dependencies": [ "base >= 2.0", "? space-age" ],
+    "title": "Tree Regrowth & Saplings",
+    "author": "chrisjmendoza",
+    "contact": "chrisjmendoza@gmail.com",
+    "homepage": "",
+    "description": "Forests slowly spread onto nearby natural ground. Chop trees for saplings (or craft them from wood) and plant them anywhere natural — pave around a tree with concrete to keep it as a single decorative tree."
+}
