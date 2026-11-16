@@ -12,7 +12,8 @@ if chance > 0 then
 				minable.count = nil
 			end
 			if minable.results then
-				table.insert(minable.results, {type = "item", name = "tree-sapling", amount = 1, probability = chance})
+				-- Factorio 2.1 replaced `probability` with `independent_probability`.
+				table.insert(minable.results, {type = "item", name = "tree-sapling", amount = 1, independent_probability = chance})
 			end
 		end
 	end

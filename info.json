@@ -1,8 +1,8 @@
 {
     "name": "TreeRegrow",
-    "version": "0.1.1",
-    "factorio_version": "2.0",
-    "dependencies": [ "base >= 2.0", "? space-age" ],
+    "version": "0.1.2",
+    "factorio_version": "2.1",
+    "dependencies": [ "base >= 2.1.7", "? space-age" ],
     "title": "Tree Regrowth & Saplings",
     "author": "chrisjmendoza",
     "contact": "chrisjmendoza@gmail.com",
