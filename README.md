@@ -1,7 +1,9 @@
 # Tree Regrowth & Saplings (TreeRegrow)
 
-For Factorio 2.0 / Space Age. Works with or without the Space Age expansion;
+For Factorio 2.1 / Space Age. Works with or without the Space Age expansion;
 it does not touch Space Age's agricultural tree-seed system.
+
+Factorio 2.0 players: use version 0.1.1.
 
 ## What it does
 
@@ -26,7 +28,7 @@ Everything is tunable in *Settings → Mod settings*.
 
 ## Install
 
-Drop `TreeRegrow_0.1.1.zip` into `%APPDATA%\Factorio\mods`.
+Drop `TreeRegrow_0.1.2.zip` into `%APPDATA%\Factorio\mods`.
 
 ## Quick test
 
