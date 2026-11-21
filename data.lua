@@ -28,7 +28,7 @@ if settings.startup["treeregrow-enable-sapling-recipe"].value then
 		{
 			type = "recipe",
 			name = "tree-sapling",
-			category = "crafting",
+			-- No category: 2.1 removed `category` (now `categories`); default is crafting.
 			energy_required = 1,
 			ingredients = {{type = "item", name = "wood", amount = 2}},
 			results = {{type = "item", name = "tree-sapling", amount = 1}},
