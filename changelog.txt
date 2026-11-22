@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 2026-11-22
+  Features:
+    - Trees that lost leaves to pollution regrow them once their chunk's pollution falls below a configurable limit (default 60, never above the level where pollution damages trees). A bare tree regrows fully in 30 minutes by default.
+    - New GMO trees technology (200 red + green science): trees regrow leaves at any pollution level. Pollution still strips them, so forests next to the factory keep absorbing pollution instead of wearing out.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 2026-11-15
   Changes:

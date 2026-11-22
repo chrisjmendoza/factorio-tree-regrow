@@ -49,3 +49,31 @@ if settings.startup["treeregrow-enable-sapling-recipe"].value then
 		},
 	})
 end
+
+-- GMO Trees: once researched, trees regrow leaves at any pollution level
+-- (see control.lua), so forests near the factory keep absorbing pollution.
+local gmo_prerequisites = {"logistic-science-pack"}
+if data.raw["technology"]["treeregrow-forestry"] then
+	table.insert(gmo_prerequisites, "treeregrow-forestry")
+end
+
+data:extend({
+	{
+		type = "technology",
+		name = "treeregrow-gmo-trees",
+		icons = table.deepcopy(icons),
+		prerequisites = gmo_prerequisites,
+		unit = {
+			count = 200,
+			ingredients = {{"automation-science-pack", 1}, {"logistic-science-pack", 1}},
+			time = 30,
+		},
+		effects = {
+			{
+				type = "nothing",
+				effect_description = {"modifier-description.treeregrow-gmo-trees"},
+				icons = table.deepcopy(icons),
+			},
+		},
+	},
+})
