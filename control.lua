@@ -78,39 +78,154 @@ script.on_nth_tick(SPREAD_CYCLE_TICKS, function()
 	end
 end)
 
--- A freshly planted sapling takes after the dominant species around it, so
--- replanting a logged area restores the local forest type. With no trees
--- nearby it stays the default tree.
-local function on_sapling_built(event)
-	local entity = event.entity
-	if not (entity and entity.valid) then return end
-	if not settings.global["treeregrow-match-nearby-species"].value then return end
+-- Planted saplings ---------------------------------------------------------
+-- The sapling item places a stand-in entity, because trees can't be ghosts.
+-- The stand-in can be, so saplings go in blueprints, robots plant them, and
+-- the reforest planner lays them out. After a short while it grows into a
+-- real tree that takes after the dominant species around it, so replanting a
+-- logged area restores the local forest type.
 
-	local surface = entity.surface
-	local pos = entity.position
-	local nearby = surface.find_entities_filtered{position = pos, radius = MATCH_RADIUS, type = "tree"}
+local PLANTED = "treeregrow-planted-sapling"
+local PLANNER = "treeregrow-reforest-planner"
+local GROW_CHECK_TICKS = 60
 
-	local counts = {}
-	local best, best_count
-	for _, tree in pairs(nearby) do
-		if tree ~= entity and is_spreadable(tree.name) then
+-- The most common living species within MATCH_RADIUS, or the default tree.
+local function species_for(surface, pos)
+	if not settings.global["treeregrow-match-nearby-species"].value then return SAPLING_TREE end
+	local counts, best, best_count = {}, nil, nil
+	for _, tree in pairs(surface.find_entities_filtered{position = pos, radius = MATCH_RADIUS, type = "tree"}) do
+		if is_spreadable(tree.name) then
 			local n = (counts[tree.name] or 0) + 1
 			counts[tree.name] = n
-			if not best_count or n > best_count then
-				best, best_count = tree.name, n
-			end
+			if not best_count or n > best_count then best, best_count = tree.name, n end
 		end
 	end
+	return best or SAPLING_TREE
+end
 
-	if best and best ~= entity.name then
-		entity.destroy{raise_destroy = true}
-		surface.create_entity{name = best, position = pos, raise_built = true}
+-- Swap a planted sapling for a real tree. If something has since taken the
+-- spot, the sapling drops back as an item rather than vanishing.
+local function grow(sapling)
+	if not sapling.valid then return end
+	local surface, pos = sapling.surface, sapling.position
+	local tree = species_for(surface, pos)
+	sapling.destroy{raise_destroy = true}
+	if surface.can_place_entity{name = tree, position = pos} then
+		surface.create_entity{name = tree, position = pos, raise_built = true}
+	else
+		surface.spill_item_stack{position = pos, stack = {name = "tree-sapling", count = 1}}
 	end
 end
 
-local sapling_filter = {{filter = "name", name = SAPLING_TREE}}
-script.on_event(defines.events.on_built_entity, on_sapling_built, sapling_filter)
-script.on_event(defines.events.on_robot_built_entity, on_sapling_built, sapling_filter)
+local function on_planted(event)
+	local e = event.entity
+	if not (e and e.valid and e.name == PLANTED) then return end
+	local seconds = settings.global["treeregrow-sapling-grow-seconds"].value
+	if seconds <= 0 then
+		grow(e)
+		return
+	end
+	storage.growing = storage.growing or {}
+	storage.growing[e.unit_number] = {entity = e, at = game.tick + seconds * 60}
+end
+
+local planted_filter = {{filter = "name", name = PLANTED}}
+script.on_event(defines.events.on_built_entity, on_planted, planted_filter)
+script.on_event(defines.events.on_robot_built_entity, on_planted, planted_filter)
+script.on_event(defines.events.script_raised_built, on_planted, planted_filter)
+script.on_event(defines.events.script_raised_revive, on_planted, planted_filter)
+
+script.on_nth_tick(GROW_CHECK_TICKS, function()
+	local growing = storage.growing
+	if not growing then return end
+	local now = game.tick
+	for id, g in pairs(growing) do
+		if not g.entity.valid then
+			growing[id] = nil
+		elseif now >= g.at then
+			growing[id] = nil
+			grow(g.entity)
+		end
+	end
+end)
+
+-- Reforest planner: fill an area's natural ground with sapling ghosts in a
+-- loose scatter (one per spacing x spacing cell, at a random tile in it).
+local function natural(surface, x, y)
+	local tile = surface.get_tile(x, y)
+	return tile.valid and tile.prototype.autoplace_specification ~= nil
+end
+
+local function reforest(surface, force, area, spacing, player)
+	local x1, y1 = math.floor(area.left_top.x), math.floor(area.left_top.y)
+	local x2, y2 = math.ceil(area.right_bottom.x) - 1, math.ceil(area.right_bottom.y) - 1
+	local placed = 0
+	for cx = x1, x2, spacing do
+		for cy = y1, y2, spacing do
+			-- a few tries at a random tile in the cell, for a natural look
+			for _ = 1, 4 do
+				local x = math.min(cx + math.random(0, spacing - 1), x2)
+				local y = math.min(cy + math.random(0, spacing - 1), y2)
+				local pos = {x = x + 0.5, y = y + 0.5}
+				if natural(surface, x, y)
+					and surface.count_entities_filtered{area = {{x, y}, {x + 1, y + 1}}, type = {"entity-ghost", "tree"}} == 0
+					and surface.can_place_entity{name = PLANTED, position = pos, force = force,
+						build_check_type = defines.build_check_type.manual_ghost} then
+					surface.create_entity{name = "entity-ghost", inner_name = PLANTED, position = pos,
+						force = force, player = player}
+					placed = placed + 1
+					break
+				end
+			end
+		end
+	end
+	return placed
+end
+
+local function unplan(surface, force, area)
+	local removed = 0
+	for _, g in pairs(surface.find_entities_filtered{area = area, type = "entity-ghost", force = force}) do
+		if g.ghost_name == PLANTED then
+			g.destroy()
+			removed = removed + 1
+		end
+	end
+	return removed
+end
+
+script.on_event(defines.events.on_player_selected_area, function(event)
+	if event.item ~= PLANNER then return end
+	local player = game.get_player(event.player_index)
+	local spacing = settings.get_player_settings(player)["treeregrow-planner-spacing"].value
+	local n = reforest(event.surface, player.force, event.area, spacing, player)
+	player.create_local_flying_text{text = {"treeregrow.planned", n}, create_at_cursor = true}
+end)
+
+script.on_event(defines.events.on_player_alt_selected_area, function(event)
+	if event.item ~= PLANNER then return end
+	local player = game.get_player(event.player_index)
+	local n = unplan(event.surface, player.force, event.area)
+	player.create_local_flying_text{text = {"treeregrow.unplanned", n}, create_at_cursor = true}
+end)
+
+-- For other mods and scripts (Claude Companion lays out forests with it):
+--   remote.call("treeregrow", "reforest", surface_index, {{x1, y1}, {x2, y2}}, spacing, force_name)
+remote.add_interface("treeregrow", {
+	reforest = function(surface_index, box, spacing, force_name)
+		local surface = game.get_surface(surface_index)
+		local area = {left_top = {x = box[1][1], y = box[1][2]}, right_bottom = {x = box[2][1], y = box[2][2]}}
+		return reforest(surface, game.forces[force_name or "player"], area, spacing or 3, nil)
+	end,
+	unplan = function(surface_index, box, force_name)
+		local surface = game.get_surface(surface_index)
+		return unplan(surface, game.forces[force_name or "player"], box)
+	end,
+	growing = function()
+		local n = 0
+		for _ in pairs(storage.growing or {}) do n = n + 1 end
+		return n
+	end,
+})
 
 -- Leaf regrowth ------------------------------------------------------------
 -- Pollution strips leaves off trees one "gray stage" at a time, and since

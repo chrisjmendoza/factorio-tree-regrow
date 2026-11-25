@@ -11,6 +11,50 @@ else
 	icons = {{icon = "__base__/graphics/icons/wood.png", icon_size = 64}}
 end
 
+-- Trees can't be ghosts (the game refuses entity-ghost for the tree type), so
+-- the sapling places this stand-in instead. It can be a ghost, so it goes in
+-- blueprints and robots plant it; control.lua grows it into a real tree.
+local icon_file = icons[1].icon
+local icon_size = icons[1].icon_size or 64
+
+data:extend({
+	{
+		type = "simple-entity-with-owner",
+		name = "treeregrow-planted-sapling",
+		icons = table.deepcopy(icons),
+		flags = {"placeable-neutral", "player-creation"},
+		minable = {mining_time = 0.2, result = "tree-sapling"},
+		placeable_by = {item = "tree-sapling", count = 1},
+		max_health = 20,
+		collision_box = {{-0.3, -0.3}, {0.3, 0.3}},
+		selection_box = {{-0.5, -0.5}, {0.5, 0.5}},
+		render_layer = "object",
+		picture = {filename = icon_file, size = icon_size, scale = 0.35},
+	},
+	{
+		type = "selection-tool",
+		name = "treeregrow-reforest-planner",
+		icons = table.deepcopy(icons),
+		flags = {"only-in-cursor", "not-stackable", "spawnable"},
+		subgroup = "tool",
+		order = "z[treeregrow-reforest-planner]",
+		stack_size = 1,
+		select = {border_color = {0.3, 0.9, 0.3}, cursor_box_type = "entity", mode = {"nothing"}},
+		alt_select = {border_color = {0.9, 0.45, 0.3}, cursor_box_type = "not-allowed", mode = {"nothing"}},
+	},
+	{
+		type = "shortcut",
+		name = "treeregrow-reforest-planner",
+		order = "z[treeregrow-reforest-planner]",
+		action = "spawn-item",
+		item_to_spawn = "treeregrow-reforest-planner",
+		icon = icon_file,
+		icon_size = icon_size,
+		small_icon = icon_file,
+		small_icon_size = icon_size,
+	},
+})
+
 data:extend({
 	{
 		type = "item",
@@ -18,7 +62,7 @@ data:extend({
 		icons = icons,
 		subgroup = "terrain",
 		order = "z[tree-sapling]",
-		place_result = "tree-05",
+		place_result = "treeregrow-planted-sapling",
 		-- Burns like the 4 wood a felled tree gives (4 x 2 MJ). The recipe costs
 		-- the same 4 wood, so crafting saplings to burn gains nothing.
 		-- (2.1: fuel_categories, plural.)

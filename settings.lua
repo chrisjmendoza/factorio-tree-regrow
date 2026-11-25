@@ -88,4 +88,22 @@ data:extend({
 		maximum_value = 600,
 		order = "k",
 	},
+	{
+		type = "int-setting",
+		name = "treeregrow-sapling-grow-seconds",
+		setting_type = "runtime-global",
+		default_value = 60,
+		minimum_value = 0,
+		maximum_value = 3600,
+		order = "l",
+	},
+	{
+		type = "int-setting",
+		name = "treeregrow-planner-spacing",
+		setting_type = "runtime-per-user",
+		default_value = 3,
+		minimum_value = 2,
+		maximum_value = 12,
+		order = "m",
+	},
 })

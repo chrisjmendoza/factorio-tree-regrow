@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2026-11-24
+  Features:
+    - Robots can plant trees. The sapling now places a planted sapling, which, unlike a tree, can be a ghost: it goes in blueprints and construction robots plant it. It grows into a real tree after a minute (new setting; 0 grows it at once), still matching the dominant species nearby.
+    - Reforest planner (shortcut bar): drag over an area to plan saplings on its natural ground in a loose, natural scatter; alt-drag removes planned saplings. Spacing is a per-player setting.
+    - Remote interface "treeregrow" (reforest, unplan, growing) so other mods can plan forests.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.5
 Date: 2026-11-24
   Bugfixes:

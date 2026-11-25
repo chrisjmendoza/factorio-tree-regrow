@@ -17,9 +17,18 @@ Factorio 2.0 players: use version 0.1.1.
 - **Saplings.** Mining a living tree has a 25% chance (configurable) to also
   drop a *tree sapling*. The cheap **Forestry** technology (25 automation
   science) unlocks crafting saplings from 4 wood (can be disabled). Place a
-  sapling like any building: it becomes a real tree that
-  matches the dominant species within 16 tiles — or the default green tree in
-  a treeless area. Blueprint tree layouts and let construction bots plant them.
+  sapling like any building: it goes in as a *planted sapling* and grows into
+  a real tree after a minute (configurable, or instantly), matching the
+  dominant species within 16 tiles, or the default green tree in a treeless
+  area.
+- **Robots plant trees.** Trees themselves can't be ghosts, but planted
+  saplings can: put them in blueprints, or use the **Reforest planner**
+  (shortcut bar). Drag over an area and it fills the natural ground with
+  sapling ghosts in a loose, natural scatter (spacing is a per-player
+  setting); alt-drag removes them. Construction robots plant them from the
+  saplings in your inventory or logistic network. Since chopping trees drops
+  saplings, clearing land for a build gives you what you need to replant it
+  somewhere else.
 - **Leaves grow back.** Pollution strips leaves off trees, and since Factorio
   2.1.24 the game never gives them back. TreeRegrow does: once a chunk's
   pollution drops below 60 (configurable), its trees regrow their leaves,
@@ -37,7 +46,10 @@ Everything is tunable in *Settings → Mod settings*.
 
 ## Install
 
-Drop `TreeRegrow_0.1.3.zip` into `%APPDATA%\Factorio\mods`.
+Drop `TreeRegrow_0.2.0.zip` into `%APPDATA%\Factorio\mods`.
+
+For other mods: `remote.call("treeregrow", "reforest", surface_index, {{x1, y1}, {x2, y2}}, spacing, force_name)`
+plans saplings over an area (it returns how many), and `"unplan"` removes them.
 
 ## Quick test
 
