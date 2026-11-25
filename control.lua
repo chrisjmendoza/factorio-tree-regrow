@@ -49,6 +49,13 @@ local function try_spread(surface, opts)
 
 	if not surface.can_place_entity{name = parent.name, position = pos} then return end
 
+	-- Ghosts don't collide with trees, so check for them separately: a seed
+	-- landing on a planned build would block the robots coming to build it.
+	-- An area search matches by bounding box, so big ghosts (3x3 machines)
+	-- count even when their centre is a couple of tiles away.
+	local box = {{pos.x - 0.6, pos.y - 0.6}, {pos.x + 0.6, pos.y + 0.6}}
+	if surface.count_entities_filtered{area = box, type = {"entity-ghost", "tile-ghost"}} > 0 then return end
+
 	surface.create_entity{name = parent.name, position = pos, raise_built = true}
 end
 

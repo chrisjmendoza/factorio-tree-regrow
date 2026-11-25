@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.5
+Date: 2026-11-24
+  Bugfixes:
+    - Spreading trees no longer take root on planned builds. Ghosts don't collide with trees, so seeds used to land under them and block the construction robots.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.4
 Date: 2026-11-24
   Features:
