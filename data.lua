@@ -19,6 +19,10 @@ data:extend({
 		subgroup = "terrain",
 		order = "z[tree-sapling]",
 		place_result = "tree-05",
+		-- Burnable like wood. Worth 2 wood, matching the 2-wood recipe, so
+		-- crafting saplings to burn gains nothing. (2.1: fuel_categories, plural.)
+		fuel_value = "4MJ",
+		fuel_categories = {"chemical"},
 		stack_size = 100,
 	},
 })

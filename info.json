@@ -1,6 +1,6 @@
 {
     "name": "TreeRegrow",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "factorio_version": "2.1",
     "dependencies": [ "base >= 2.1.7", "? space-age" ],
     "title": "Tree Regrowth & Saplings",
