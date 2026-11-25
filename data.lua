@@ -19,9 +19,10 @@ data:extend({
 		subgroup = "terrain",
 		order = "z[tree-sapling]",
 		place_result = "tree-05",
-		-- Burnable like wood. Worth 2 wood, matching the 2-wood recipe, so
-		-- crafting saplings to burn gains nothing. (2.1: fuel_categories, plural.)
-		fuel_value = "4MJ",
+		-- Burns like the 4 wood a felled tree gives (4 x 2 MJ). The recipe costs
+		-- the same 4 wood, so crafting saplings to burn gains nothing.
+		-- (2.1: fuel_categories, plural.)
+		fuel_value = "8MJ",
 		fuel_categories = {"chemical"},
 		stack_size = 100,
 	},
@@ -34,7 +35,7 @@ if settings.startup["treeregrow-enable-sapling-recipe"].value then
 			name = "tree-sapling",
 			-- No category: 2.1 removed `category` (now `categories`); default is crafting.
 			energy_required = 1,
-			ingredients = {{type = "item", name = "wood", amount = 2}},
+			ingredients = {{type = "item", name = "wood", amount = 4}},
 			results = {{type = "item", name = "tree-sapling", amount = 1}},
 			enabled = false,
 		},

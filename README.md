@@ -16,7 +16,7 @@ Factorio 2.0 players: use version 0.1.1.
   tree fully ringed by paving stays exactly where it is, forever, alone.
 - **Saplings.** Mining a living tree has a 25% chance (configurable) to also
   drop a *tree sapling*. The cheap **Forestry** technology (25 automation
-  science) unlocks crafting saplings from 2 wood (can be disabled). Place a
+  science) unlocks crafting saplings from 4 wood (can be disabled). Place a
   sapling like any building: it becomes a real tree that
   matches the dominant species within 16 tiles — or the default green tree in
   a treeless area. Blueprint tree layouts and let construction bots plant them.
